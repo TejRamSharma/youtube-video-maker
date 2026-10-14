@@ -30,19 +30,26 @@ if st.button("Generate Final Video"):
                 os.remove(audio_file)
 
             ydl_opts = {
-                'format': 'ba/b',
-                'outtmpl': 'downloaded_audio.%(ext)s',
-                'extractor_args': {
-                    'youtube': {
-                        'player_client': ['ios', 'android', 'web']
-                    }
-                },
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '128',
-                }],
-            }
+    'format': 'ba/b',
+    'outtmpl': 'downloaded_audio.%(ext)s',
+    # YouTube Cloud IP blocks bypass karne ke liye Android client:
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['android', 'mweb'],
+            'player_skip': ['webpage', 'configs'],
+        }
+    },
+    'http_headers': {
+        'User-Agent': 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-us,en;q=0.5',
+    },
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '128',
+    }],
+}
 
             try:
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
